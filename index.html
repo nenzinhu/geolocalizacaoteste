@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Nominatim - Reverse Geocoding</title>
+</head>
+<body>
+
+<h2>Conversão de Latitude/Longitude para Endereço</h2>
+
+<button onclick="buscarEndereco()">Buscar Endereço</button>
+
+<p><strong>Resultado:</strong></p>
+<pre id="resultado"></pre>
+
+<script>
+function buscarEndereco() {
+    const lat = -27.496;
+    const lon = -48.655;
+
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+
+    fetch(url, {
+        headers: {
+            "User-Agent": "PMRV-Automation-Demo"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("resultado").textContent = JSON.stringify(data, null, 2);
+    })
+    .catch(error => {
+        document.getElementById("resultado").textContent = "Erro: " + error;
+    });
+}
+</script>
+
+</body>
+</html>
