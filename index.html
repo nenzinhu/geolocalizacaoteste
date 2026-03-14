@@ -2,22 +2,44 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Teste Nominatim - Reverse Geocoding</title>
+    <title>GPS + Nominatim</title>
 </head>
 <body>
 
-<h2>Conversão de Latitude/Longitude para Endereço</h2>
+<h2>Localização Automática + Endereço</h2>
 
-<button onclick="buscarEndereco()">Buscar Endereço</button>
+<button onclick="pegarLocalizacao()">Pegar Localização</button>
 
-<p><strong>Resultado:</strong></p>
-<pre id="resultado"></pre>
+<p><strong>Latitude:</strong> <span id="lat"></span></p>
+<p><strong>Longitude:</strong> <span id="lon"></span></p>
+
+<p><strong>Endereço:</strong></p>
+<pre id="endereco"></pre>
 
 <script>
-function buscarEndereco() {
-    const lat = -27.496;
-    const lon = -48.655;
+function pegarLocalizacao() {
+    if (!navigator.geolocation) {
+        alert("Geolocalização não suportada no seu navegador.");
+        return;
+    }
 
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            document.getElementById("lat").textContent = lat;
+            document.getElementById("lon").textContent = lon;
+
+            buscarEndereco(lat, lon);
+        },
+        function(err) {
+            alert("Erro ao obter localização: " + err.message);
+        }
+    );
+}
+
+function buscarEndereco(lat, lon) {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
 
     fetch(url, {
@@ -27,10 +49,11 @@ function buscarEndereco() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById("resultado").textContent = JSON.stringify(data, null, 2);
+        document.getElementById("endereco").textContent =
+            JSON.stringify(data, null, 2);
     })
     .catch(error => {
-        document.getElementById("resultado").textContent = "Erro: " + error;
+        document.getElementById("endereco").textContent = "Erro: " + error;
     });
 }
 </script>
